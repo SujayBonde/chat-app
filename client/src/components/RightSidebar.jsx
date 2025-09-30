@@ -4,51 +4,73 @@ import { AuthContext } from '../../context/AuthContext';
 import assets from '../assets/assets';
 
 const RightSidebar = () => {
+  const { selectedUser, messages } = useContext(ChatContext);
+  const { logout, onlineUsers } = useContext(AuthContext);
+  const [messageImages, setMessageImages] = useState([]);
 
-  const {selectedUser, messages} = useContext(ChatContext);
-  const {logout, onlineUsers} =useContext(AuthContext);
-  const [messageImages, setMessageImages] = useState([])
-
-  //get all the images from chat
-  useEffect(()=>{
+  // get all the images from chat
+  useEffect(() => {
     setMessageImages(
-      messages.filter(msg=> msg.image).map(msg=>msg.image)
-    )
-  },[messages])
+      messages.filter((msg) => msg.image).map((msg) => msg.image)
+    );
+  }, [messages]);
 
-  return selectedUser && (
-    <div className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll ${selectedUser ? 'max-md:hidden': ''}`}>
+  return (
+    <div
+      className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll 
+      ${!selectedUser ? 'flex items-center justify-center' : ''}`}
+    >
+      {!selectedUser ? (
+        // ---------- Placeholder when no user is selected ----------
+        <p className="text-gray-400">Select a user to view details</p>
+      ) : (
+        // ---------- User profile + media when user is selected ----------
+        <>
+          <div className="pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto">
+            <img
+              src={selectedUser?.profilePic || assets.avatar_icon}
+              alt=""
+              className="w-20 aspect-[1/1] rounded-full"
+            />
 
-      <div className='pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto'>
-        <img src={selectedUser?.profilePic || assets.avatar_icon} alt="" className='w-20 aspect-[1/1] rounded-full'/>
+            <h1 className="px-10 text-sm font-medium mx-auto flex items-center gap-2">
+              {onlineUsers.includes(selectedUser._id) && (
+                <p className="w-2 h-2 rounded-full bg-green-500"></p>
+              )}
+              {selectedUser.fullName}
+            </h1>
+            <p className="px-10 mx-auto">{selectedUser.bio}</p>
+          </div>
 
-        <h1 className='px-10 text-sm font-medium mx-auto flex items-center gap-2'>
-          {onlineUsers.includes(selectedUser._id) && <p className='w-2 h-2 rounded-full bg-green-500'></p> }
-          {selectedUser.fullName}</h1>
-          <p className='px-10 mx-auto'>{selectedUser.bio}</p>
-      </div>
+          <hr className="border-[#ffffff50] my-4" />
 
-      <hr className='border-[#ffffff50] my-4' />
-
-      <div className='px-5 text-xs'>
-        <p>Media</p>
-        <div className='mt-2 max-h-[200] overflow-y-scroll grid grid-cols-2 gap-4 opacity-80'>
-
-          {messageImages.map((url, index)=>(
-            <div className='cursor-pointer rounded' key={index} onClick={()=> window.open(url)}>
-              <img src={url} alt="" className='h-full rounded-md'/>
+          <div className="px-5 text-xs">
+            <p>Media</p>
+            <div className="mt-2 max-h-[200px] overflow-y-scroll grid grid-cols-2 gap-4 opacity-80">
+              {messageImages.map((url, index) => (
+                <div
+                  className="cursor-pointer rounded"
+                  key={index}
+                  onClick={() => window.open(url)}
+                >
+                  <img src={url} alt="" className="h-full rounded-md" />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
 
-        </div>
-      </div>
-
-      <button onClick={()=> logout()} className='absolute top-2 left-20 transform -translate-x-10 bg-gradient-to-r from-purple-400 text-white border-none text-sm font-light py-2 px-20 rounded-full cursor-pointer'>
-        Logout
-      </button>
-
+          <button
+            onClick={() => logout()}
+            className="absolute top-2 left-20 transform -translate-x-10 
+            bg-gradient-to-r from-purple-400 text-white border-none 
+            text-sm font-light py-2 px-20 rounded-full cursor-pointer"
+          >
+            Logout
+          </button>
+        </>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default RightSidebar
+export default RightSidebar;
