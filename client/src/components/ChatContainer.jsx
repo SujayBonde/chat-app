@@ -7,7 +7,6 @@ import toast from 'react-hot-toast'
 
 const ChatContainer = () => {
 
-
   const { messages, selectedUser, setSelectedUser, sendMessage, getMessages}= useContext(ChatContext);
 
   const {authUser, onlineUsers}= useContext(AuthContext);
@@ -49,92 +48,126 @@ const ChatContainer = () => {
 
   useEffect(() => {
     if (scrollEnd.current && messages) {
-      scrollEnd.current.scrollIntoView({ bevavior: "smooth" });
+      scrollEnd.current.scrollIntoView({ behavior: "smooth" });
     }
-  },[messages]);
+  }, [messages]);
 
   return selectedUser ? (
-    <div className="w-full overflow-scroll relative backdrop-blur-lg">
-      {/* header */}
-      <div className="flex items-center gap-3 py-3 mx-4 border-b border-stone-500">
-        <img className="w-8 rounded-full" src={selectedUser.profilePic || assets.avatar_icon} alt="" />
-        <p className="flex-1 text-lg text-white flex items-center gap-2">
-          {selectedUser.fullName}
-          {onlineUsers.includes(selectedUser._id) && <span className="w-2 h-2 rounded-full bg-green-500"></span> }
-        </p>
-        <img
+    <div className="flex flex-col h-full w-full bg-slate-900/50 backdrop-blur-lg relative">
+      
+      {/* Header */}
+      <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10">
+        <button 
           onClick={() => setSelectedUser(null)}
-          src={assets.arrow_icon}
-          alt=""
-          className="md:hidden max-w-7"
-        />
-        <img src={assets.help_icon} alt="" className="max-md:hidden max-w-5" />
-      </div>
+          className="md:hidden p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors"
+        >
+          <img src={assets.arrow_icon} alt="Back" className="w-5 h-5 invert opacity-80" />
+        </button>
 
-      {/* Chat */}
-      <div className="flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex items-end gap-2 justify-end ${
-              msg.senderId !== authUser._id && "flex-row-reverse"
-            }`}
-          >
-            {msg.image ? (
-              <img
-                src={msg.image}
-                alt=""
-                className="max-w-[230] border border-gray-700 rounded-lg overflow-hidden mb-8"
-              />
-            ) : (
-              <p
-                className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-voilet-500/30 text-white ${
-                  msg.senderId !== authUser._id
-                    ? "rounded-br-none"
-                    : "rounded-bl-none"
-                }}`}
-              >
-                {msg.text}
-              </p>
-            )}
-            <div className="text-center text-xs">
-              <img
-                src={
-                  msg.senderId == authUser._id 
-                    ? authUser?.profilePic || assets.avatar_icon
-                    : selectedUser?.profilePic || assets.avatar_icon
-                }
-                alt=""
-                className="w-7 rounded-full"
-              />
-              <p className="text-gray-500">
-                {formatMessageTime(msg.createdAt)}
-              </p>
-            </div>
-          </div>
-        ))}
-        <div ref={scrollEnd}></div>
-      </div>
-
-        {/* Bottom area */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3">
-          <div className="flex-1 flex items-center bg-gray-100/12 px-3 rounded-full">
-            <input onChange={(e)=>setInput(e.target.value)} value={input} onKeyDown={(e)=>e.key==="Enter"? handleSendMessage(e) : null} type="text" placeholder="Send a Message" className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400"/>
-            <input onChange={handleSendImage} type="file" id="image" accept="image/png, image/jpeg" hidden/>
-            <label htmlFor="image">
-              <img src={assets.gallery_icon} alt="" className="w-4 mr-2 cursor-pointer"/>
-            </label>
-          </div>
-          <img onClick={handleSendMessage} src={assets.send_button} alt="" className="w-10 cursor-pointer"/>
+        <div className="relative">
+          <img 
+            className="w-10 h-10 rounded-full object-cover border-2 border-slate-700" 
+            src={selectedUser.profilePic || assets.avatar_icon} 
+            alt={selectedUser.fullName} 
+          />
+           {onlineUsers.includes(selectedUser._id) && (
+             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-slate-900 rounded-full"></span> 
+           )}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-white text-lg truncate">{selectedUser.fullName}</h3>
+          <p className="text-xs text-slate-400">
+            {onlineUsers.includes(selectedUser._id) ? "Active now" : "Offline"}
+          </p>
         </div>
 
+        <img src={assets.help_icon} alt="Help" className="w-6 h-6 opacity-60 hover:opacity-100 cursor-pointer transition-opacity" />
+      </div>
 
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+        {messages.map((msg, index) => {
+           const isSender = msg.senderId === authUser._id;
+           return (
+            <div key={index} className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
+              <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isSender ? "items-end" : "items-start"}`}>
+                
+                {msg.image && (
+                   <img
+                    src={msg.image}
+                    alt="attachment"
+                    className="max-w-[250px] w-full rounded-xl border border-slate-700/50 mb-2 cursor-pointer hover:scale-[1.02] transition-transform"
+                   />
+                )}
+
+                {msg.text && (
+                  <div
+                    className={`px-4 py-2.5 rounded-2xl text-sm md:text-[15px] leading-relaxed break-words shadow-sm ${
+                      isSender 
+                        ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-br-sm" 
+                        : "bg-slate-800/80 text-gray-100 border border-slate-700/50 rounded-bl-sm"
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                )}
+                
+                <div className="text-[10px] text-slate-500 mt-1 px-1 font-medium">
+                  {formatMessageTime(msg.createdAt)}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={scrollEnd} className="h-1" />
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 bg-slate-900/50 border-t border-slate-700/50">
+         <form 
+           onSubmit={handleSendMessage}
+           className="flex items-center gap-3 bg-slate-800/80 p-1.5 rounded-full border border-slate-700/50 focus-within:border-indigo-500/50 focus-within:bg-slate-800 transition-all shadow-lg"
+         >
+            <div className="flex items-center gap-1 pl-2">
+               <label htmlFor="image" className="p-2 hover:bg-white/10 rounded-full cursor-pointer transition-colors group">
+                 <img src={assets.gallery_icon} alt="gallery" className="w-5 h-5 opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+                 <input onChange={handleSendImage} type="file" id="image" accept="image/png, image/jpeg" hidden />
+               </label>
+            </div>
+
+            <input 
+              onChange={(e) => setInput(e.target.value)} 
+              value={input} 
+              type="text" 
+              placeholder="Type a message..." 
+              className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder-slate-400 h-9"
+            />
+            
+            <button 
+              type="submit"
+              disabled={!input.trim()}
+              className={`p-2.5 rounded-full transition-all duration-300 ${
+                 input.trim() 
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-md hover:shadow-indigo-500/30 rotate-0" 
+                  : "bg-slate-700/50 text-slate-400 cursor-not-allowed rotate-90 opacity-50"
+              }`}
+            >
+               <img src={assets.send_button} alt="send" className="w-4 h-4 translate-x-0.5" />
+            </button>
+         </form>
+      </div>
 
     </div>
   ) : (
-    <div className="flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden">
-      <img src={assets.logo_icon} alt="" className="max-w-16" />
-      <p className="text-lg font-medium text-white ">Chat Anytime, Anywhere</p>
+    <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-900/30">
+      <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 animate-pulse-slow">
+         <img src={assets.logo_icon} alt="Logo" className="w-12 h-12 opacity-80" />
+      </div>
+      <h2 className="text-2xl font-bold text-white mb-2">Welcome to Quick Chat App</h2>
+      <p className="text-slate-400 max-w-xs leading-relaxed">
+        Select a chat to start messaging instantly with your friends and family.
+      </p>
     </div>
   );
 };
