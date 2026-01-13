@@ -8,7 +8,7 @@ const HomePage = () => {
   const { selectedUser } = useContext(ChatContext);
 
   return (
-    <div className='h-screen bg-transparent overflow-hidden flex flex-col'>
+    <div className='h-[100dvh] bg-transparent overflow-hidden flex flex-col'>
        <div className={`flex-1 w-full md:w-[95%] xl:w-[90%] mx-auto md:pt-4 md:pb-2 overflow-hidden`}>
         <div className={`bg-slate-900/50 backdrop-blur-3xl md:border border-slate-700/50 md:rounded-2xl overflow-hidden h-full grid grid-cols-1 md:grid-cols-[320px_1fr] lg:grid-cols-[380px_1fr_320px] shadow-2xl transition-all duration-300`}>
           
