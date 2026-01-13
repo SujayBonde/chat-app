@@ -25,7 +25,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center gap-10 px-4 sm:px-10 lg:px-20 overflow-hidden relative'>
+    <div className='min-h-screen flex items-center justify-center gap-10 px-4 sm:px-10 lg:px-20 overflow-hidden relative backdrop-blur-[30px]'>
       
       {/* Background Decor */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
@@ -35,7 +35,7 @@ const LoginPage = () => {
       <div className='hidden md:flex flex-col items-center justify-center gap-6 text-center animate-fade-in-up'>
          <img src={assets.logo_big} alt="Logo" className='w-[200px] lg:w-[250px] drop-shadow-2xl hover:scale-105 transition-transform duration-500'/>
          <div>
-            <h1 className='text-4xl font-bold text-white mb-2 tracking-tight'>Connect Instantly</h1>
+            <h1 className='text-2xl font-bold text-white mb-2 tracking-tight'>Connect Instantly</h1>
             <p className='text-slate-400 text-lg'>Experience seamless messaging like never before.</p>
          </div>
       </div>
